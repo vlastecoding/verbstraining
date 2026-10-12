@@ -51,8 +51,14 @@ h1 .logo { height: 44px; }
 .score .ok { color: var(--ok); }
 .score .ko { color: var(--ko); }
 .score .record { color: #b7791f; }
-.stats-link { text-decoration: none; display: inline-flex; }
-.stats-link .ico { width: 1.3em; height: 1.3em; }
+.icon-link { text-decoration: none; display: inline-flex; color: var(--muted); }
+.icon-link .ico { width: 1.3em; height: 1.3em; }
+
+/* collapsible sections: a chevron replaces the default marker */
+details > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary .chevron { transition: transform .15s; color: var(--muted); }
+details[open] > summary .chevron { transform: rotate(90deg); }
 
 .card {
     margin-top: 24px;
@@ -120,8 +126,24 @@ button.toggle.off { background: var(--muted); }
 .judge .ok { background: var(--ok); }
 .judge .ko { background: var(--ko); }
 
-.settings { margin-top: 32px; background: var(--card); border-radius: 12px; padding: 12px 16px; }
-.settings summary { cursor: pointer; font-weight: 600; }
+/* settings: side panel opened by the gear in the header */
+dialog.panel {
+    margin: 0 0 0 auto; padding: 0; border: 0;
+    width: min(380px, 92vw); height: 100dvh; max-height: 100dvh;
+    background: var(--card); color: var(--text);
+    border-radius: 20px 0 0 20px; box-shadow: -8px 0 30px rgba(0, 0, 0, .15);
+}
+dialog.panel[open] { animation: slide-in .2s ease-out; }
+dialog.panel::backdrop { background: rgba(20, 12, 24, .4); }
+@keyframes slide-in { from { transform: translateX(100%); } }
+.panel-head { display: flex; justify-content: space-between; align-items: center; padding: 16px 12px 4px 20px; }
+.panel-head h2 { display: flex; align-items: center; gap: 8px; margin: 0; font-size: 1.3rem; }
+.panel-head h2 .ico { color: var(--muted); }
+.settings { padding: 0 20px 24px; }
+.icon-btn { display: inline-flex; padding: 6px; border-radius: 10px; background: none; color: var(--muted); font-size: inherit; }
+.icon-btn:hover { background: rgba(0, 0, 0, .06); color: var(--text); }
+.icon-btn .ico { width: 1.3em; height: 1.3em; }
+header .icon-btn { margin: -6px -6px -6px -4px; }
 .settings label { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-top: 12px; }
 .settings label.check { justify-content: flex-start; }
 .settings input[type=number] { width: 80px; font-size: 1rem; padding: 4px; }
@@ -135,6 +157,8 @@ button.toggle.off { background: var(--muted); }
 
 /* ---------- Statistics ---------- */
 .stats { margin-top: 40px; scroll-margin-top: 16px; }
+.stats > summary h2 { display: flex; align-items: center; gap: 8px; margin: 0; }
+.stats[open] > summary { margin-bottom: 8px; }
 h2 { margin: 0 0 4px; font-size: 1.5rem; }
 h3 { margin-top: 28px; font-size: 1.2rem; }
 

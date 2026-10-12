@@ -760,6 +760,35 @@ for (const b of document.querySelectorAll(".segmented button")) {
 }
 window.addEventListener("resize", renderChart);
 
+// ---------- Collapsible sections ----------
+// the open/closed state of the statistics is remembered; the chart icon in the header opens the section and scrolls to it
+const statsBox = $("stats");
+statsBox.open = storageGet("stats-open") === "1";
+statsBox.addEventListener("toggle", () => {
+    storageSet("stats-open", statsBox.open ? "1" : "0");
+    if (statsBox.open) renderChart();  // the chart is sized on the visible width
+});
+for (const link of document.querySelectorAll(".icon-link")) {
+    link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const target = $(link.getAttribute("href").slice(1));
+        target.open = true;
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+}
+
+// ---------- Settings panel ----------
+const settingsPanel = $("settings");
+$("settings-btn").addEventListener("click", () => {
+    if (running) stopGame();
+    settingsPanel.showModal();
+});
+$("settings-close").addEventListener("click", () => settingsPanel.close());
+// a click on the backdrop (left of the panel) closes it; empty space inside the panel is also the dialog itself
+settingsPanel.addEventListener("click", (e) => {
+    if (e.clientX < settingsPanel.getBoundingClientRect().left) settingsPanel.close();
+});
+
 $("reset").addEventListener("click", async () => {
     if (!confirm("Vuoi davvero azzerare tutte le statistiche? Non si può annullare.")) return;
     try {
