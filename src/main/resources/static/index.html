@@ -3,40 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>VerbFlash</title>
+    <title>VerbFlash · Impara i verbi inglesi a voce</title>
+    <meta name="theme-color" content="#f4f1ea">
+    <link rel="icon" type="image/svg+xml" href="logo/verbflash-icona.svg">
+    <link rel="apple-touch-icon" href="logo/apple-touch-icon.png">
+    <link rel="manifest" href="manifest.webmanifest">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<svg class="sprite" aria-hidden="true">
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" stroke-width="3"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke-width="3"/></symbol>
+    <symbol id="i-flame" viewBox="0 0 24 24">
+        <path d="M12 2c.8 3.2 3.4 4.9 4.9 7.2 1.3 2 1.9 3.6 1.9 5.4A6.8 6.8 0 0 1 12 21.4a6.8 6.8 0 0 1-6.8-6.8c0-2.3 1-4.1 2.4-5.4.3 1.6 1 2.6 2.1 3.1C9 9 10 5 12 2z" fill="#f08a24" stroke="none"/>
+        <path d="M12 11.5c1.6 1.6 3 3 3 4.9a3 3 0 0 1-6 0c0-1.3.7-2.2 1.5-2.9.3.9.8 1.3 1.4 1.4-.4-1.3-.3-2.3.1-3.4z" fill="#ffc93c" stroke="none"/>
+    </symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24">
+        <path d="M7 5H4.5v1.5A3.5 3.5 0 0 0 7.6 10M17 5h2.5v1.5a3.5 3.5 0 0 1-3.1 3.5" stroke="#e0a100"/>
+        <path d="M7 3h10v6a5 5 0 0 1-10 0z" fill="#ffc93c" stroke="#e0a100" stroke-width="1.5"/>
+        <path d="M11 13.5h2V18h-2z" fill="#e0a100" stroke="none"/>
+        <path d="M8 17.5h8a1 1 0 0 1 1 1V21H7v-2.5a1 1 0 0 1 1-1z" fill="#b7791f" stroke="none"/>
+    </symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24">
+        <rect x="3.5" y="12" width="4.5" height="9" rx="1.5" fill="#f25c54" stroke="none"/>
+        <rect x="9.75" y="7" width="4.5" height="14" rx="1.5" fill="#ffc93c" stroke="none"/>
+        <rect x="16" y="3" width="4.5" height="18" rx="1.5" fill="#3b6fd8" stroke="none"/>
+    </symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M8.5 21h7"/></symbol>
+    <symbol id="i-mic-off" viewBox="0 0 24 24"><path d="M15 9.5V6a3 3 0 0 0-5.7-1.3M9 9v2a3 3 0 0 0 4.6 2.5M18.5 11a6.5 6.5 0 0 1-.9 3.3M5.5 11a6.5 6.5 0 0 0 10.4 5.2M12 17.5V21M8.5 21h7M4 4l16 16"/></symbol>
+    <symbol id="i-pause" viewBox="0 0 24 24"><rect x="6.5" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none"/><rect x="13.5" y="5" width="4" height="14" rx="1.2" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13a1 1 0 0 0 1.5.86l10.5-6.5a1 1 0 0 0 0-1.72L9.5 4.64A1 1 0 0 0 8 5.5z" fill="currentColor" stroke="none"/></symbol>
+    <symbol id="i-hourglass" viewBox="0 0 24 24"><path d="M7 3h10M7 21h10M8 3v3.5a4 4 0 0 0 1.6 3.2L12 12l2.4-2.3A4 4 0 0 0 16 6.5V3M8 21v-3.5a4 4 0 0 1 1.6-3.2L12 12l2.4 2.3a4 4 0 0 1 1.6 3.2V21"/></symbol>
+    <symbol id="i-star" viewBox="0 0 24 24"><path d="M12 2.5l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5L12 17.3l-5.8 3.1 1.1-6.5-4.7-4.6 6.5-.9z" fill="#ffc93c" stroke="#e0a100" stroke-width="1.5"/></symbol>
+    <symbol id="i-trend-up" viewBox="0 0 24 24"><path d="M4 17l6-6 4 4 6-7M14.5 8H20v5.5"/></symbol>
+    <symbol id="i-trend-down" viewBox="0 0 24 24"><path d="M4 7l6 6 4-4 6 7M14.5 16H20v-5.5"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M4 12h16M14 6l6 6-6 6"/></symbol>
+    <symbol id="i-flag-it" viewBox="0 0 24 16">
+        <clipPath id="clip-it"><rect width="24" height="16" rx="2.5"/></clipPath>
+        <g clip-path="url(#clip-it)" stroke="none"><rect width="8" height="16" fill="#009246"/><rect x="8" width="8" height="16" fill="#fff"/><rect x="16" width="8" height="16" fill="#ce2b37"/></g>
+        <rect x=".5" y=".5" width="23" height="15" rx="2" stroke="#000" stroke-opacity=".12" stroke-width="1"/>
+    </symbol>
+    <symbol id="i-flag-gb" viewBox="0 0 24 16">
+        <clipPath id="clip-gb"><rect width="24" height="16" rx="2.5"/></clipPath>
+        <g clip-path="url(#clip-gb)" stroke-linecap="butt">
+            <rect width="24" height="16" fill="#012169" stroke="none"/>
+            <path d="M0 0l24 16M24 0L0 16" stroke="#fff" stroke-width="3.2"/>
+            <path d="M0 0l24 16M24 0L0 16" stroke="#c8102e" stroke-width="1.2"/>
+            <path d="M12 0v16M0 8h24" stroke="#fff" stroke-width="5"/>
+            <path d="M12 0v16M0 8h24" stroke="#c8102e" stroke-width="3"/>
+        </g>
+    </symbol>
+</svg>
 <main>
     <header>
-        <h1>VerbFlash</h1>
+        <h1><img class="logo" src="logo/verbflash-logo.svg" alt="VerbFlash"></h1>
         <div class="score">
-            <span class="ok">✔ <b id="correct">0</b></span>
-            <span class="ko">✘ <b id="wrong">0</b></span>
-            <span class="streak" title="Risposte giuste di fila">🔥 <b id="streak">0</b></span>
-            <span class="record" title="Record di risposte giuste di fila">🏆 <b id="best-streak">0</b></span>
-            <a class="stats-link" href="#stats" title="Statistiche">📊</a>
+            <span class="ok"><svg class="ico"><use href="#i-check"/></svg> <b id="correct">0</b></span>
+            <span class="ko"><svg class="ico"><use href="#i-x"/></svg> <b id="wrong">0</b></span>
+            <span class="streak" title="Risposte giuste di fila"><svg class="ico"><use href="#i-flame"/></svg> <b id="streak">0</b></span>
+            <span class="record" title="Record di risposte giuste di fila"><svg class="ico"><use href="#i-trophy"/></svg> <b id="best-streak">0</b></span>
+            <a class="stats-link" href="#stats" title="Statistiche" aria-label="Statistiche"><svg class="ico"><use href="#i-chart"/></svg></a>
         </div>
     </header>
 
     <section id="card" class="card idle">
         <div id="direction" class="direction">Premi “Inizia” e rispondi a voce!</div>
-        <div id="prompt" class="prompt">🎤</div>
+        <div id="prompt" class="prompt"><svg class="ico big"><use href="#i-mic"/></svg></div>
         <div class="timer"><div id="timer-bar"></div></div>
         <div id="heard" class="heard"></div>
         <div id="feedback" class="feedback"></div>
         <div id="judge" class="judge" hidden>
-            <button id="judge-ok" class="ok">✔ Giusto</button>
-            <button id="judge-ko" class="ko">✘ Sbagliato</button>
+            <button id="judge-ok" class="ok"><svg class="ico"><use href="#i-check"/></svg> Giusto</button>
+            <button id="judge-ko" class="ko"><svg class="ico"><use href="#i-x"/></svg> Sbagliato</button>
         </div>
     </section>
 
     <div class="controls">
         <button id="start">Inizia</button>
-        <button id="pause" hidden>⏸ Pausa</button>
+        <button id="pause" hidden><svg class="ico"><use href="#i-pause"/></svg> Pausa</button>
         <button id="skip" disabled>Non lo so</button>
         <button id="stop" disabled>Stop</button>
-        <button id="mic" class="toggle" title="Attiva/disattiva il microfono">🎤 Microfono attivo</button>
+        <button id="mic" class="toggle" title="Attiva/disattiva il microfono"><svg class="ico"><use href="#i-mic"/></svg> Microfono attivo</button>
     </div>
 
     <details class="settings">
@@ -55,10 +102,10 @@
             <input id="speak-prompt" type="checkbox" checked> Leggi le parole ad alta voce
         </label>
         <label>Voce italiana
-            <span class="voice"><select id="voice-it"></select><button id="test-it" type="button">▶</button></span>
+            <span class="voice"><select id="voice-it"></select><button id="test-it" type="button" aria-label="Prova la voce"><svg class="ico"><use href="#i-play"/></svg></button></span>
         </label>
         <label>Voce inglese
-            <span class="voice"><select id="voice-en"></select><button id="test-en" type="button">▶</button></span>
+            <span class="voice"><select id="voice-en"></select><button id="test-en" type="button" aria-label="Prova la voce"><svg class="ico"><use href="#i-play"/></svg></button></span>
         </label>
         <label class="check">
             <input id="sounds" type="checkbox" checked> Suoni per risposta giusta/sbagliata
@@ -92,11 +139,11 @@
 
         <section class="tiles">
             <div class="tile"><span class="label">Risposte giuste</span><b id="percent">–</b><span id="percent-detail" class="sub"></span></div>
-            <div class="tile"><span class="label">🏆 Record di fila</span><b id="best">0</b><span id="best-at" class="sub"></span></div>
-            <div class="tile"><span class="label">🔥 Serie attuale</span><b id="current">0</b></div>
+            <div class="tile"><span class="label"><svg class="ico"><use href="#i-trophy"/></svg> Record di fila</span><b id="best">0</b><span id="best-at" class="sub"></span></div>
+            <div class="tile"><span class="label"><svg class="ico"><use href="#i-flame"/></svg> Serie attuale</span><b id="current">0</b></div>
             <div class="tile"><span class="label">Verbi imparati</span><b id="mastered">0</b><span id="mastered-detail" class="sub"></span></div>
-            <div class="tile"><span class="label">🇮🇹 → 🇬🇧</span><b id="it-en">–</b><span id="it-en-detail" class="sub"></span></div>
-            <div class="tile"><span class="label">🇬🇧 → 🇮🇹</span><b id="en-it">–</b><span id="en-it-detail" class="sub"></span></div>
+            <div class="tile"><span class="label" aria-label="Italiano → Inglese"><svg class="ico flag"><use href="#i-flag-it"/></svg> <svg class="ico"><use href="#i-arrow"/></svg> <svg class="ico flag"><use href="#i-flag-gb"/></svg></span><b id="it-en">–</b><span id="it-en-detail" class="sub"></span></div>
+            <div class="tile"><span class="label" aria-label="Inglese → Italiano"><svg class="ico flag"><use href="#i-flag-gb"/></svg> <svg class="ico"><use href="#i-arrow"/></svg> <svg class="ico flag"><use href="#i-flag-it"/></svg></span><b id="en-it">–</b><span id="en-it-detail" class="sub"></span></div>
         </section>
         <p class="info">Un verbo è “imparato” quando le ultime 3 risposte su quel verbo sono giuste.</p>
 
@@ -109,7 +156,7 @@
                 <tbody id="wrong-list"></tbody>
             </table>
         </div>
-        <p id="no-wrong" class="info" hidden>Nessun errore finora 🎉</p>
+        <p id="no-wrong" class="info" hidden>Nessun errore finora <svg class="ico"><use href="#i-star"/></svg></p>
 
         <div class="controls">
             <button id="reset" class="danger">Azzera statistiche</button>

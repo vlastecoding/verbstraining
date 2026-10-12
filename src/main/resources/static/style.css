@@ -13,6 +13,15 @@
 /* hidden must win even over rules like display: flex */
 [hidden] { display: none !important; }
 
+/* icons from the SVG sprite in index.html */
+.sprite { position: absolute; width: 0; height: 0; overflow: hidden; }
+.ico {
+    width: 1.1em; height: 1.1em; vertical-align: -0.2em; flex-shrink: 0;
+    fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+.ico.flag { width: 1.4em; height: .95em; vertical-align: -0.12em; }
+.ico.big { width: 1.2em; height: 1.2em; vertical-align: middle; color: var(--accent); }
+
 body {
     margin: 0;
     font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -34,13 +43,16 @@ header {
     gap: 8px;
 }
 
-h1 { margin: 0; font-size: 1.8rem; }
+h1 { margin: 0; font-size: 1.8rem; line-height: 0; }
+h1 .logo { height: 44px; }
 
 .score { display: flex; gap: 16px; font-size: 1.2rem; }
+.score > * { white-space: nowrap; }
 .score .ok { color: var(--ok); }
 .score .ko { color: var(--ko); }
 .score .record { color: #b7791f; }
-.stats-link { text-decoration: none; }
+.stats-link { text-decoration: none; display: inline-flex; }
+.stats-link .ico { width: 1.3em; height: 1.3em; }
 
 .card {
     margin-top: 24px;
@@ -218,3 +230,21 @@ dialog#tip-dlg::backdrop { background: rgba(20, 12, 24, .55); }
 .dlg-btns button, .dlg-btns .btn { font-size: 1rem; padding: 12px 16px; }
 .dlg-btns .secondary { background: var(--muted); }
 .dlg-btns .btn { display: inline-flex; align-items: center; border-radius: 12px; background: var(--accent); color: #fff; text-decoration: none; }
+
+/* phones */
+@media (max-width: 480px) {
+    main { padding: 16px 12px; }
+    header { flex-wrap: nowrap; }
+    h1 .logo { height: 32px; }
+    .score { gap: 10px; font-size: 1rem; }
+    .card { margin-top: 16px; padding: 24px 16px; }
+    .controls { gap: 8px; margin-top: 16px; }
+    .controls button { padding: 12px 16px; font-size: 1rem; }
+    .judge button { flex: 1; padding: 14px 12px; }
+    .tiles { grid-template-columns: 1fr 1fr; gap: 8px; }
+    .tile b { font-size: 1.5rem; }
+}
+@media (max-width: 360px) {
+    h1 .logo { height: 26px; }
+    .score { gap: 7px; font-size: .95rem; }
+}

@@ -11,9 +11,15 @@ const els = {
     mic: $("mic"), judge: $("judge"), judgeOk: $("judge-ok"), judgeKo: $("judge-ko"),
 };
 
+// icon from the SVG sprite in index.html
+function icon(name, cls = "") {
+    return `<svg class="ico ${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+}
+
+const flags = (from, to) => `${icon(`flag-${from}`, "flag")} ${icon("arrow")} ${icon(`flag-${to}`, "flag")}`;
 const DIRECTION_LABEL = {
-    IT_TO_EN: "🇮🇹 → 🇬🇧  Dillo in inglese",
-    EN_TO_IT: "🇬🇧 → 🇮🇹  Dillo in italiano",
+    IT_TO_EN: `${flags("it", "gb")}&nbsp; Dillo in inglese`,
+    EN_TO_IT: `${flags("gb", "it")}&nbsp; Dillo in italiano`,
 };
 const PAUSE_AFTER_CORRECT_MS = 1500;
 const PAUSE_AFTER_WRONG_MS = 2500;
@@ -175,7 +181,7 @@ async function nextQuestion() {
     current = question;
 
     els.card.className = "card";
-    els.direction.textContent = DIRECTION_LABEL[current.direction];
+    els.direction.innerHTML = DIRECTION_LABEL[current.direction];
     els.prompt.textContent = current.prompt;
     els.heard.textContent = "";
     els.feedback.textContent = "";
@@ -219,7 +225,7 @@ function listen(myRound) {
     };
     // tell the child when the mic is really listening: starting takes a moment after the prompt is read
     recognition.onstart = () => {
-        if (myRound === round && current && !current.answered) els.heard.textContent = "🎤 Ti ascolto…";
+        if (myRound === round && current && !current.answered) els.heard.innerHTML = `${icon("mic")} Ti ascolto…`;
     };
     // Chrome stops recognition after some silence: restart it if there is still time.
     recognition.onend = () => {
@@ -229,7 +235,7 @@ function listen(myRound) {
     };
     recognition.onerror = (e) => {
         if (e.error === "not-allowed" || e.error === "service-not-allowed") {
-            els.feedback.textContent = "Microfono non consentito: giudica tu con ✔ / ✘";
+            els.feedback.textContent = "Microfono non consentito: giudica tu con Giusto / Sbagliato";
             setMic(false);
         }
     };
@@ -286,7 +292,7 @@ async function finish(myRound, spoken, selfAssessed = null) {
         score.correct++;
         els.card.className = "card correct";
         els.feedback.textContent = `Giusto! ${formatAnswers(result.expected)}`;
-        if (result.newRecord) els.feedback.textContent += ` — Nuovo record! 🏆`;
+        if (result.newRecord) els.feedback.insertAdjacentHTML("beforeend", ` — Nuovo record! ${icon("trophy")}`);
     } else {
         score.wrong++;
         els.card.className = "card wrong";
@@ -316,7 +322,7 @@ function formatAnswers(answers) {
 function showOffline() {
     els.card.className = "card";
     els.direction.textContent = "Il server non risponde, riprovo tra poco…";
-    els.prompt.textContent = "⏳";
+    els.prompt.innerHTML = icon("hourglass", "big");
     els.heard.textContent = "";
     els.feedback.textContent = "";
     els.judge.hidden = true;
@@ -383,7 +389,7 @@ function enterPause() {
     els.judge.hidden = true;
     els.card.className = "card";
     els.direction.textContent = "In pausa: premi “Riprendi” per continuare";
-    els.prompt.textContent = "⏸";
+    els.prompt.innerHTML = icon("pause", "big");
     els.heard.textContent = "";
     resetTimerBar();
     els.timerBar.style.transform = "scaleX(0)";
@@ -399,7 +405,8 @@ function onPauseClick() {
 
 function updatePauseButton() {
     const waiting = running && !paused && pauseRequested;
-    els.pause.textContent = !running || paused ? "▶ Riprendi" : waiting ? "⏳ Pausa a fine domanda" : "⏸ Pausa";
+    els.pause.innerHTML = !running || paused ? `${icon("play")} Riprendi`
+        : waiting ? `${icon("hourglass")} Pausa a fine domanda` : `${icon("pause")} Pausa`;
     els.pause.title = waiting ? "Clicca di nuovo per annullare la pausa" : "";
     els.pause.classList.toggle("pending", waiting);
 }
@@ -449,7 +456,7 @@ function stopGame() {
     updatePauseButton();
     els.card.className = "card";
     els.direction.textContent = "Premi “Riprendi” e rispondi a voce!";
-    els.prompt.textContent = "🎤";
+    els.prompt.innerHTML = icon("mic", "big");
 }
 
 els.start.addEventListener("click", startGame);
@@ -464,7 +471,7 @@ els.mic.addEventListener("click", () => setMic(!micOn));
 
 // ---------- Mic on/off ----------
 function updateMicButton() {
-    els.mic.textContent = micOn ? "🎤 Microfono attivo" : "🔇 Microfono spento";
+    els.mic.innerHTML = micOn ? `${icon("mic")} Microfono attivo` : `${icon("mic-off")} Microfono spento`;
     els.mic.classList.toggle("off", !micOn);
 }
 
@@ -594,7 +601,7 @@ function renderTrendSummary(trend) {
     const kind = trend.delta >= TREND_STABLE_POINTS ? "up" : trend.delta <= -TREND_STABLE_POINTS ? "down" : "flat";
     const badge = document.createElement("span");
     badge.className = `trend-badge ${kind}`;
-    badge.textContent = { up: "↗ In miglioramento", down: "↘ In calo", flat: "→ Stabile" }[kind];
+    badge.innerHTML = { up: `${icon("trend-up")} In miglioramento`, down: `${icon("trend-down")} In calo`, flat: `${icon("arrow")} Stabile` }[kind];
     const sign = trend.delta > 0 ? "+" : "";
     box.append(
         badge,
