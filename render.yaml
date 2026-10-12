@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: verbstraining
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/config
+    # The free plan has no persistent disk: data/stats.json is lost on every
+    # restart, redeploy and idle spin-down. To keep the statistics, switch to
+    # plan: starter and uncomment the disk below.
+    # envVars:
+    #   - key: VERBFLASH_STATS_FILE
+    #     value: /var/data/stats.json
+    # disk:
+    #   name: verbflash-data
+    #   mountPath: /var/data
+    #   sizeGB: 1

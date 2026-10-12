@@ -1,5 +1,5 @@
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 verbflash:
   # seconds available to say the answer (can also be overridden from the command line:

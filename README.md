@@ -29,3 +29,13 @@ One verb per line, `key;english;italian`; multiple accepted answers separated by
 
 The key identifies the verb in the statistics: it must be unique and should never change,
 so translations can be edited freely without losing the verb's history.
+
+## Deploying on Render
+
+The repo has a `Dockerfile` and a `render.yaml` blueprint. On Render: **New → Blueprint**,
+pick this repository, and it builds the Docker image and serves it over HTTPS
+(required by the browser for microphone access). The `PORT` provided by Render is picked up automatically.
+
+On the free plan the filesystem is ephemeral, so statistics are reset on every redeploy,
+restart and idle spin-down (after ~15 minutes without traffic). To keep them, switch to a paid
+plan and enable the persistent disk commented out in `render.yaml`.
