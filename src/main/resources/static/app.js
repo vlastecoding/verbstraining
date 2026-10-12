@@ -768,4 +768,24 @@ $("reset").addEventListener("click", async () => {
     loadStats();
 });
 
+// ---------- Ko-fi ----------
+function coinSound() {
+    if (!audioCtx && window.AudioContext) audioCtx = new AudioContext();
+    if (audioCtx) [988, 1319, 1568].forEach((f, i) => tone(f, [0, 0.09, 0.2][i], 0.35, "square", 0.12));
+}
+
+const tipDlg = $("tip-dlg");
+$("tip-btn").addEventListener("click", () => {
+    if (running) stopGame();
+    if (tipDlg.showModal) tipDlg.showModal();
+    else window.open($("tip-yes").href, "_blank");
+});
+$("tip-no").addEventListener("click", () => tipDlg.close());
+$("tip-yes").addEventListener("click", () => {
+    coinSound();
+    setTimeout(() => tipDlg.close(), 300);
+});
+// a click on the backdrop closes the dialog
+tipDlg.addEventListener("click", (e) => { if (e.target === tipDlg) tipDlg.close(); });
+
 init();

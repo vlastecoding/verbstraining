@@ -120,7 +120,23 @@
         Questo browser non supporta il riconoscimento vocale: si gioca col microfono spento.
         Per usarlo serve Google Chrome (o Edge).
     </p>
+    <footer class="tip">
+        <p>VerbFlash è gratuito e lo preparo nel tempo libero. Se ti è utile, puoi offrirmi un caffè.</p>
+        <button id="tip-btn" class="tip-btn" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h12v6a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3v2M12 3v2"/></svg>Offrimi un caffè</button>
+    </footer>
 </main>
+<dialog id="tip-dlg" aria-labelledby="tip-title">
+    <div class="dlg">
+        <svg class="dlg-ico" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="18"/><path d="M24 14v12"/><circle cx="24" cy="33" r="1.6" fill="currentColor"/></svg>
+        <h2 id="tip-title">Aspetta un attimo!</h2>
+        <p>Questo pulsante serve per fare una <b>donazione con soldi veri</b>.</p>
+        <p>Se sei un bambino o una bambina, <b>chiedi prima a un genitore</b>.</p>
+        <div class="dlg-btns">
+            <button id="tip-no" class="secondary" type="button">Torno ai verbi</button>
+            <a id="tip-yes" class="btn" href="https://ko-fi.com/stefanovioletta" target="_blank" rel="noopener">Sono un adulto, continua</a>
+        </div>
+    </div>
+</dialog>
 <script src="app.js"></script>
 </body>
 </html>
