@@ -29,9 +29,17 @@ class QuizService(
 
     fun nextQuestion(direction: Direction? = null, excludeVerbKey: String? = null): Question {
         val candidates = repository.verbs.filter { it.key != excludeVerbKey }.ifEmpty { repository.verbs }
-        val verb = candidates.random()
         val dir = direction
             ?: if (Random.nextDouble() < properties.italianToEnglishRatio) Direction.IT_TO_EN else Direction.EN_TO_IT
+        return question(candidates.random(), dir)
+    }
+
+    /** The questions of an exam ("verifica"): [count] different verbs, always from English to Italian. */
+    fun exam(count: Int = EXAM_SIZE): List<Question> =
+        repository.verbs.shuffled().take(count.coerceIn(1, repository.verbs.size))
+            .map { question(it, Direction.EN_TO_IT) }
+
+    private fun question(verb: Verb, dir: Direction): Question {
         val prompt = if (dir == Direction.IT_TO_EN) verb.italian.first() else verb.english.first()
         val answers = if (dir == Direction.IT_TO_EN) verb.english else verb.italian
         return Question(verb.key, dir, prompt, dir.promptLang, dir.answerLang, properties.answerTimeoutSeconds, answers)
@@ -59,6 +67,8 @@ class QuizService(
         repository.findByKey(verbKey) ?: throw NoSuchElementException("Verb '$verbKey' does not exist")
 
     companion object {
+        const val EXAM_SIZE = 10
+
         /** Hesitations or extra words that recognition may add before/after the answer ("ok become", "ehm guidare"). */
         private val FILLERS = setOf(
             "to", "ok", "okay", "um", "uh", "uhm", "er", "erm", "eh", "ehm", "mh", "mmh", "allora", "beh", "cioe",

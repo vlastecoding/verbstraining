@@ -14,6 +14,7 @@
 <svg class="sprite" aria-hidden="true">
     <symbol id="i-gear" viewBox="0 0 24 24"><path d="M10.3 2.8a1.7 1.7 0 0 1 3.4 0l.2 1.3a1.7 1.7 0 0 0 2.5 1l1.1-.7a1.7 1.7 0 0 1 2.4 2.4l-.7 1.1a1.7 1.7 0 0 0 1 2.5l1.3.2a1.7 1.7 0 0 1 0 3.4l-1.3.2a1.7 1.7 0 0 0-1 2.5l.7 1.1a1.7 1.7 0 0 1-2.4 2.4l-1.1-.7a1.7 1.7 0 0 0-2.5 1l-.2 1.3a1.7 1.7 0 0 1-3.4 0l-.2-1.3a1.7 1.7 0 0 0-2.5-1l-1.1.7a1.7 1.7 0 0 1-2.4-2.4l.7-1.1a1.7 1.7 0 0 0-1-2.5l-1.3-.2a1.7 1.7 0 0 1 0-3.4l1.3-.2a1.7 1.7 0 0 0 1-2.5l-.7-1.1a1.7 1.7 0 0 1 2.4-2.4l1.1.7a1.7 1.7 0 0 0 2.5-1z"/><circle cx="12" cy="12" r="3.2"/></symbol>
     <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M4 7l8 6 8-6"/></symbol>
+    <symbol id="i-exam" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2.5"/><path d="M9 4V3h6v1.5H9zM8.5 10.5l1.5 1.5 2.5-2.5M14 11h2M8.5 16l1.5 1.5 2.5-2.5M14 16.5h2"/></symbol>
     <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
     <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7" stroke-width="3"/></symbol>
     <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" stroke-width="3"/></symbol>
@@ -82,8 +83,20 @@
         </div>
     </section>
 
-    <div class="controls">
+    <section id="exam-result" class="card exam-result" hidden>
+        <div class="direction">Risultato della verifica</div>
+        <div class="exam-score"><b id="exam-score"></b>/<span id="exam-total"></span></div>
+        <p id="exam-message" class="exam-message"></p>
+        <ol id="exam-list" class="exam-list"></ol>
+        <div class="controls">
+            <button id="exam-again" type="button"><svg class="ico"><use href="#i-exam"/></svg> Nuova verifica</button>
+            <button id="exam-back" class="secondary" type="button">Torna al gioco</button>
+        </div>
+    </section>
+
+    <div id="controls" class="controls">
         <button id="start">Inizia</button>
+        <button id="exam" class="exam-btn" title="10 verbi dall'inglese all'italiano, il risultato alla fine"><svg class="ico"><use href="#i-exam"/></svg> Verifica</button>
         <button id="pause" hidden><svg class="ico"><use href="#i-pause"/></svg> Pausa</button>
         <button id="skip" disabled>Non lo so</button>
         <button id="stop" disabled>Stop</button>

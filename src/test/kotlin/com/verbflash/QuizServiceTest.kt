@@ -17,6 +17,22 @@ class QuizServiceTest {
     private val drive = repository.verbs.first { it.english.first() == "drive" }
 
     @Test
+    fun `an exam asks ten different verbs from English to Italian`() {
+        val exam = service.exam()
+        assertEquals(10, exam.size)
+        assertEquals(10, exam.map { it.verbKey }.toSet().size)
+        assertTrue(exam.all { it.direction == Direction.EN_TO_IT })
+        val first = repository.findByKey(exam.first().verbKey)!!
+        assertEquals(first.english.first(), exam.first().prompt)
+        assertEquals(first.italian, exam.first().answers)
+    }
+
+    @Test
+    fun `an exam never asks more verbs than there are`() {
+        assertEquals(repository.verbs.size, service.exam(1000).size)
+    }
+
+    @Test
     fun `accepts the English answer with a leading to`() {
         assertTrue(service.check(become.key, Direction.IT_TO_EN, listOf("To become")).correct)
     }

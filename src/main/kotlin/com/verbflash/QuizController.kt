@@ -28,7 +28,7 @@ data class AnswerResponse(
     val newRecord: Boolean,
 )
 
-data class CheckResponse(val correct: Boolean)
+data class CheckResponse(val correct: Boolean, val heard: String?, val expected: List<String>)
 
 data class ConfigResponse(val answerTimeoutSeconds: Int, val verbCount: Int)
 
@@ -50,6 +50,10 @@ class QuizController(
         @RequestParam(required = false) exclude: String?,
     ) = quizService.nextQuestion(direction, exclude)
 
+    /** Exam ("verifica"): the answers are checked with /check, so they don't end up in the statistics. */
+    @GetMapping("/exam")
+    fun exam() = quizService.exam()
+
     @PostMapping("/answer")
     fun answer(@RequestBody request: AnswerRequest): AnswerResponse {
         val result = request.selfAssessed
@@ -62,10 +66,14 @@ class QuizController(
         )
     }
 
-    /** Checks without recording: used on partial recognition results, to stop listening as soon as the answer is right. */
+    /**
+     * Checks without recording: used on partial recognition results, to stop listening as soon as the answer
+     * is right, and for the exam answers.
+     */
     @PostMapping("/check")
     fun check(@RequestBody request: AnswerRequest) =
-        CheckResponse(quizService.check(request.verbKey, request.direction, request.spoken).correct)
+        quizService.check(request.verbKey, request.direction, request.spoken)
+            .let { CheckResponse(it.correct, it.heard, it.expected) }
 
     @GetMapping("/stats")
     fun stats() = statsService.summary()

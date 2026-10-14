@@ -8,6 +8,12 @@ A tiny game to learn English verbs by speaking them out loud. Spring Boot (Kotli
 
 then open **http://localhost:8080** in **Google Chrome** (the browser's speech recognition is required) and allow microphone access.
 
+## Exam mode ("Verifica")
+
+The **Verifica** button asks 10 random verbs, always from English to Italian, like a teacher would:
+the first complete answer counts, and whether it was right is shown only at the end, with the score and
+the list of verbs. Exam answers are not recorded in the statistics.
+
 ## Configuration (`src/main/resources/application.yml`)
 
 | property | default | meaning |
