@@ -42,8 +42,10 @@ let nextTimer = null;
 // Pause takes effect only once the current question is over (answered or timed out)
 let pauseRequested = false;
 let paused = false;
-// exam ("verifica"): fixed list of questions, answers checked without being recorded, result only at the end
-let exam = null;  // { questions, index, results }
+// exam ("verifica"): fixed list of questions, answers checked without being recorded, result only at the end.
+// The review of the mistakes after an exam uses the same state, with review: true and immediate feedback.
+let exam = null;  // exam: { questions, index, results }; review: { review: true, queue }
+let lastExamResults = [];
 // with the mic off an adult judges the answer with the ✔ / ✘ buttons
 let micOn = !!SpeechRecognition && storageGet("mic") !== "off";
 
@@ -176,9 +178,12 @@ async function nextQuestion() {
     if (els.mode.value) params.set("direction", els.mode.value);
     if (current) params.set("exclude", current.verbKey);
     let question;
-    if (exam) {
+    if (exam?.review) {
+        if (!exam.queue.length) return showReviewDone();
+        question = { ...exam.queue[0] };
+    } else if (exam) {
         if (exam.index === exam.questions.length) return showExamResult();
-        question = exam.questions[exam.index];
+        question = { ...exam.questions[exam.index] };
     } else {
         try {
             question = await api(`/api/question?${params}`);
@@ -194,8 +199,9 @@ async function nextQuestion() {
     current = question;
 
     els.card.className = "card";
-    els.direction.innerHTML = exam
-        ? `Domanda ${exam.index + 1} di ${exam.questions.length} &nbsp;·&nbsp; ${flags("gb", "it")}`
+    els.direction.innerHTML = exam?.review
+        ? `Ripasso: ${exam.queue.length === 1 ? "ultimo verbo" : `ancora ${exam.queue.length} verbi`} &nbsp;·&nbsp; ${flags("gb", "it")}`
+        : exam ? `Domanda ${exam.index + 1} di ${exam.questions.length} &nbsp;·&nbsp; ${flags("gb", "it")}`
         : DIRECTION_LABEL[current.direction];
     els.prompt.textContent = current.prompt;
     els.heard.textContent = "";
@@ -257,7 +263,7 @@ function listen(myRound, onReady = null) {
         els.heard.textContent = alternatives[0] ? `Ho sentito: “${alternatives[0]}”` : "";
         if (result.isFinal) finish(myRound, alternatives);
         // in the exam the first complete answer counts: stopping early when it's right would give the result away
-        else if (!exam) checkPartial(myRound, alternatives);
+        else if (!exam || exam.review) checkPartial(myRound, alternatives);
     };
     // tell the child when the mic is really listening: starting takes a moment after the prompt is read
     recognition.onstart = () => {
@@ -309,6 +315,7 @@ async function finish(myRound, spoken, selfAssessed = null) {
     if (window.speechSynthesis) speechSynthesis.cancel();
     freezeTimerBar();
     els.judge.hidden = true;
+    if (exam?.review) return recordReviewAnswer(myRound, spoken, selfAssessed);
     if (exam) return recordExamAnswer(myRound, spoken, selfAssessed);
 
     let result;
@@ -457,6 +464,7 @@ function updatePauseButton() {
 
 // ---------- Exam ("verifica") ----------
 async function startExam() {
+    stopReading();
     if (!audioCtx && window.AudioContext) audioCtx = new AudioContext();
     audioCtx?.resume();
     els.exam.disabled = true;
@@ -470,9 +478,23 @@ async function startExam() {
         els.direction.textContent = "Il server non risponde: riprova tra poco.";
         return;
     }
+    beginExam({ questions, index: 0, results: [] });
+    countdown();
+}
+
+// Repeats only the verbs that were wrong in the last exam, with immediate feedback, until each one is right
+function startReview() {
+    stopReading();
+    const queue = lastExamResults.filter((r) => !r.correct).map((r) => r.question);
+    if (!queue.length) return;
+    beginExam({ review: true, queue });
+    nextQuestion();
+}
+
+function beginExam(state) {
     showExamScreen(false);
     setExamMode(true);
-    exam = { questions, index: 0, results: [] };
+    exam = state;
     running = true;
     paused = false;
     pauseRequested = false;
@@ -482,7 +504,16 @@ async function startExam() {
     els.pause.hidden = true;
     els.skip.disabled = false;
     els.stop.disabled = false;
-    countdown();
+    els.exam.disabled = true;
+}
+
+// Checks an answer without recording it in the statistics
+function checkAnswer(spoken) {
+    return api("/api/check", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ verbKey: current.verbKey, direction: current.direction, spoken }),
+    });
 }
 
 // The answer is checked without being recorded and the result is shown only at the end
@@ -491,11 +522,7 @@ async function recordExamAnswer(myRound, spoken, selfAssessed) {
     let heard = spoken[0] ?? null;
     if (selfAssessed === null && spoken.length) {
         try {
-            const r = await api("/api/check", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ verbKey: current.verbKey, direction: current.direction, spoken }),
-            });
+            const r = await checkAnswer(spoken);
             correct = r.correct;
             heard = r.heard;
         } catch (e) {
@@ -508,12 +535,52 @@ async function recordExamAnswer(myRound, spoken, selfAssessed) {
         if (myRound !== round) return;
     }
     // judged: with the mic off an adult pressed Giusto / Sbagliato
-    exam.results.push({ prompt: current.prompt, answers: current.answers, heard, correct, judged: !micOn && selfAssessed !== null });
+    exam.results.push({ question: exam.questions[exam.index], heard, correct, judged: !micOn && selfAssessed !== null });
     exam.index++;
     els.card.className = "card";
     els.feedback.textContent = "Risposta registrata";
     beep(880, 0.12);
     scheduleNext(PAUSE_AFTER_EXAM_ANSWER_MS);
+}
+
+// Review of the mistakes: immediate feedback as in the game; a wrong verb goes back to the end of the queue
+async function recordReviewAnswer(myRound, spoken, selfAssessed) {
+    let correct = selfAssessed === true;
+    if (selfAssessed === null && spoken.length) {
+        try {
+            correct = (await checkAnswer(spoken)).correct;
+        } catch (e) {
+            if (myRound !== round) return;
+            console.warn(e);
+            stopGame();
+            els.direction.textContent = "Il server non risponde: ripasso interrotto.";
+            return;
+        }
+        if (myRound !== round) return;
+    }
+    const question = exam.queue.shift();
+    if (!correct) exam.queue.push(question);
+    els.card.className = `card ${correct ? "correct" : "wrong"}`;
+    els.feedback.textContent = correct
+        ? `Giusto! ${formatAnswers(current.answers)}`
+        : `${spoken.length || selfAssessed === false && !micOn ? "Sbagliato" : "La risposta era"}: ${formatAnswers(current.answers)}`;
+    playSound(correct);
+    if (!correct && els.speakPrompt.checked) {
+        await wait(700);
+        if (myRound !== round) return;
+        await speak(current.answers[0], current.answerLang);
+        if (myRound !== round) return;
+    }
+    scheduleNext(correct ? PAUSE_AFTER_CORRECT_MS : PAUSE_AFTER_WRONG_MS);
+}
+
+function showReviewDone() {
+    stopGame();
+    els.card.className = "card correct";
+    els.direction.textContent = "Ripasso finito";
+    els.prompt.innerHTML = icon("star", "big");
+    els.feedback.textContent = "Hai detto giusti tutti i verbi che avevi sbagliato!";
+    playSound(true);
 }
 
 function examMessage(score, total) {
@@ -525,6 +592,7 @@ function examMessage(score, total) {
 
 function showExamResult() {
     const results = exam.results;
+    lastExamResults = results;
     stopGame();
     els.direction.textContent = "Premi “Inizia” e rispondi a voce!";
     const score = results.filter((r) => r.correct).length;
@@ -539,7 +607,7 @@ function showExamResult() {
         li.className = r.correct ? "ok" : "ko";
         const verb = document.createElement("span");
         verb.className = "verb";
-        verb.textContent = `${r.prompt} → ${formatAnswers(r.answers)}`;
+        verb.textContent = `${r.question.prompt} → ${formatAnswers(r.question.answers)}`;
         const detail = document.createElement("span");
         detail.className = "detail";
         detail.textContent = r.heard ? `Hai detto: “${r.heard}”`
@@ -548,9 +616,41 @@ function showExamResult() {
         li.append(verb, detail);
         return li;
     }));
+    const mistakes = results.length - score;
+    $("review").hidden = !mistakes;
+    $("read-mistakes").hidden = !mistakes;
     setExamMode(true);
     showExamScreen(true);
     if (score >= EXAM_PASS) playSound(true);
+    // read the mistakes aloud, after the cheerful sound
+    if (mistakes && els.speakPrompt.checked) readMistakes(score >= EXAM_PASS ? 1200 : 600);
+}
+
+// Reads the wrong verbs of the last exam one after the other ("catch… prendere, afferrare"),
+// highlighting the row being read
+let readRun = 0;
+async function readMistakes(delayMs = 0) {
+    const run = ++readRun;
+    const rows = [...$("exam-list").children];
+    if (delayMs) await wait(delayMs);
+    for (const [i, r] of lastExamResults.entries()) {
+        if (run !== readRun) return;
+        if (r.correct) continue;
+        rows.forEach((li) => li.classList.toggle("reading", li === rows[i]));
+        await speak(r.question.prompt, r.question.promptLang);
+        if (run !== readRun) return;
+        await wait(400);
+        await speak(r.question.answers.slice(0, 2).join(", "), r.question.answerLang);
+        if (run !== readRun) return;
+        await wait(900);
+    }
+    if (run === readRun) rows.forEach((li) => li.classList.remove("reading"));
+}
+
+function stopReading() {
+    readRun++;
+    if (window.speechSynthesis) speechSynthesis.cancel();
+    for (const li of $("exam-list").children) li.classList.remove("reading");
 }
 
 // Exam colours, from the start of the exam until the player goes back to the game
@@ -614,23 +714,28 @@ function stopGame() {
     els.prompt.innerHTML = icon("mic", "big");
     els.exam.disabled = false;
     if (exam) {
+        els.direction.textContent = exam.review
+            ? "Ripasso interrotto: premi “Verifica” per una nuova verifica."
+            : "Verifica annullata: premi “Verifica” per rifarla.";
         exam = null;
         setExamMode(false);
         els.start.hidden = false;
         els.pause.hidden = true;
-        els.direction.textContent = "Verifica annullata: premi “Verifica” per rifarla.";
     }
 }
 
 els.start.addEventListener("click", startGame);
 els.pause.addEventListener("click", onPauseClick);
 els.stop.addEventListener("click", () => {
-    if (exam && !confirm("Vuoi annullare la verifica? Le risposte date finora non contano.")) return;
+    if (exam && !exam.review && !confirm("Vuoi annullare la verifica? Le risposte date finora non contano.")) return;
     stopGame();
 });
 els.exam.addEventListener("click", startExam);
 $("exam-again").addEventListener("click", startExam);
+$("review").addEventListener("click", startReview);
+$("read-mistakes").addEventListener("click", () => readMistakes());
 $("exam-back").addEventListener("click", () => {
+    stopReading();
     setExamMode(false);
     showExamScreen(false);
 });

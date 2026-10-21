@@ -12,7 +12,9 @@ then open **http://localhost:8080** in **Google Chrome** (the browser's speech r
 
 The **Verifica** button asks 10 random verbs, always from English to Italian, like a teacher would:
 the first complete answer counts, and whether it was right is shown only at the end, with the score and
-the list of verbs. Exam answers are not recorded in the statistics.
+the list of verbs. The wrong verbs are then read aloud with their translation, and **Ripassa gli errori**
+asks them again with immediate feedback until each one is right. Exam and review answers are not recorded
+in the statistics.
 
 ## Configuration (`src/main/resources/application.yml`)
 

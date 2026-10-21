@@ -119,6 +119,8 @@ details[open] > summary .chevron { transform: rotate(90deg); }
 .exam-list li.ok > .ico { color: var(--ok); }
 .exam-list li.ko > .ico { color: var(--ko); }
 .exam-list .verb { font-weight: 600; }
+/* the wrong verb being read aloud at the end of the exam */
+.exam-list li.reading { background: var(--exam-soft); border-radius: 8px; box-shadow: inset 3px 0 0 var(--exam); }
 .exam-list .detail { color: var(--muted); font-size: .9rem; }
 
 .controls { display: flex; gap: 12px; justify-content: center; margin-top: 24px; flex-wrap: wrap; }
@@ -135,6 +137,7 @@ button {
 button:disabled { opacity: .4; cursor: default; }
 #skip { background: var(--muted); }
 .exam-btn, #exam-again { background: var(--exam); }
+.review-btn { background: var(--ok); }
 
 /* exam mode ("verifica"): purple instead of blue, so it's clear it isn't the usual game */
 body.exam-mode { background: #efeaf6; }
